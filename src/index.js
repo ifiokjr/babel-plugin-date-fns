@@ -5,7 +5,7 @@ export default ({ types: t }) => ({
       const { specifiers, source } = node;
       const { value: pkgId } = source;
 
-      if (pkgId !== 'date-fns') {
+      if (!['date-fns', 'date-fns/fp'].includes(pkgId)) {
         return;
       }
 
@@ -13,20 +13,27 @@ export default ({ types: t }) => ({
         return;
       }
 
-      specifiers.forEach((spec) => {
+      specifiers.forEach(spec => {
         const { local, imported } = spec;
         const { name: localName } = local;
 
-        let importedPath = 'date-fns';
+        let importedPath = pkgId;
 
         if (t.isImportSpecifier(spec)) {
           const { name: importedName } = imported;
           spec = t.importDefaultSpecifier(t.identifier(localName));
 
-          importedPath = `date-fns/${importedName}`;
+          if (pkgId === 'date-fns/fp') {
+            console.log('FP TEST');
+          }
+
+          importedPath = `${pkgId}/${importedName}`;
+          console.log(importedPath);
         }
 
-        path.insertAfter(t.importDeclaration([spec], t.stringLiteral(importedPath)));
+        path.insertAfter(
+          t.importDeclaration([spec], t.stringLiteral(importedPath)),
+        );
       });
 
       path.remove();
