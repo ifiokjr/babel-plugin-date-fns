@@ -5,7 +5,11 @@ export default ({ types: t }) => ({
       const { specifiers, source } = node;
       const { value: pkgId } = source;
 
-      if (!['date-fns', 'date-fns/fp'].includes(pkgId)) {
+      if (
+        !['date-fns', 'date-fns/fp', 'date-fns-tz', 'date-fns-tz/fp'].includes(
+          pkgId,
+        )
+      ) {
         return;
       }
 
@@ -23,12 +27,7 @@ export default ({ types: t }) => ({
           const { name: importedName } = imported;
           spec = t.importDefaultSpecifier(t.identifier(localName));
 
-          if (pkgId === 'date-fns/fp') {
-            console.log('FP TEST');
-          }
-
           importedPath = `${pkgId}/${importedName}`;
-          console.log(importedPath);
         }
 
         path.insertAfter(
